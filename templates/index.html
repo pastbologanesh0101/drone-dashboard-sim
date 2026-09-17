@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Autonomous Drone Dashboard (Simulated)</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <header>
+    <h1>Autonomous Drone Dashboard</h1>
+    <p class="disclaimer">
+      SIMULATION ONLY &mdash; this dashboard displays a software-simulated drone
+      and autonomy state machine. No real drone, flight controller, or GPS
+      hardware is connected. See README.md.
+    </p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Telemetry</h2>
+      <dl class="telemetry-grid">
+        <dt>State</dt><dd id="state">-</dd>
+        <dt>Battery</dt><dd id="battery">-</dd>
+        <dt>Altitude (m)</dt><dd id="altitude">-</dd>
+        <dt>Position (x, y)</dt><dd id="position">-</dd>
+        <dt>Velocity (vx, vy, vz)</dt><dd id="velocity">-</dd>
+        <dt>Simulated GPS</dt><dd id="gps">-</dd>
+        <dt>Waypoint</dt><dd id="waypoint-progress">-</dd>
+        <dt>Mission complete</dt><dd id="mission-complete">-</dd>
+      </dl>
+    </section>
+
+    <section class="panel">
+      <h2>Top-down position plot</h2>
+      <canvas id="plot" width="480" height="480"></canvas>
+    </section>
+
+    <section class="panel">
+      <h2>Mission control</h2>
+      <p>Comma-separated waypoints as <code>x,y</code> or <code>x,y,z</code> pairs, one per line.</p>
+      <textarea id="waypoints-input" rows="5" placeholder="20,0
+20,20
+0,20"></textarea>
+      <div class="button-row">
+        <button id="start-mission">Set mission &amp; start</button>
+        <button id="abort-mission" class="danger">Abort / return home</button>
+      </div>
+      <pre id="log"></pre>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>
