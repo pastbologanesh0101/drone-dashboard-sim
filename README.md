@@ -1,5 +1,8 @@
 # Autonomous Drone Dashboard (Simulated)
 
+[![tests](https://github.com/pastbologanesh0101/drone-dashboard-sim/actions/workflows/tests.yml/badge.svg)](https://github.com/pastbologanesh0101/drone-dashboard-sim/actions/workflows/tests.yml)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **This project is a software simulation only.** There is no real drone, no
 real flight controller, no radio telemetry link, and no real GPS receiver
 anywhere in this codebase. `drone/simulation.py` synthesizes a plausible
@@ -10,6 +13,17 @@ vanilla-JS dashboard polls and visualizes it. If you are looking for
 something that talks to actual hardware (MAVLink, PX4, ArduPilot, DJI SDKs,
 etc.), this is not that — it's a self-contained backend/frontend exercise in
 telemetry APIs, state machines, and live dashboards.
+
+## Contents
+
+- [What it actually does](#what-it-actually-does)
+- [Autonomy state machine](#autonomy-state-machine)
+- [Running it](#running-it)
+- [HTTP API](#http-api)
+- [Tests](#tests)
+- [Project layout](#project-layout)
+- [Troubleshooting / FAQ](#troubleshooting--faq)
+- [Disclaimer](#disclaimer)
 
 ## What it actually does
 
