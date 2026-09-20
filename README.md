@@ -137,7 +137,7 @@ abort from multiple states, mission completion/landing, GPS drift bounds).
 `tests/test_app.py` drives the same behavior through Flask's test client
 (telemetry JSON shape, mission replacement, malformed-input rejection,
 abort endpoint). CI (`.github/workflows/tests.yml`) runs the full suite on
-Python 3.11 and 3.12 on every push and pull request.
+Python 3.11, 3.12, and 3.13 on every push and pull request.
 
 ## Project layout
 
