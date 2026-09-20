@@ -137,6 +137,27 @@ class TestBattery(unittest.TestCase):
 
 
 class TestAbortAndMissionCompletion(unittest.TestCase):
+    def test_abort_is_a_noop_once_landed(self):
+        # abort() explicitly early-returns for LANDED (see Drone.abort). A
+        # ground crew hitting "abort" after the drone has already landed
+        # shouldn't re-trigger a low_battery_abort reason or move anything.
+        drone = Drone(config=make_config())
+        drone.state = DroneState.LANDED
+        drone.abort()
+        self.assertEqual(drone.state, DroneState.LANDED)
+        self.assertIsNone(drone._last_abort_reason)
+
+    def test_set_mission_rejects_empty_waypoint_list(self):
+        # set_mission() raises directly on an empty list; the Flask layer
+        # (tests/test_app.py) covers the HTTP 400 wrapping of this, but the
+        # underlying Drone-level contract wasn't pinned down on its own.
+        drone = Drone(config=make_config())
+        with self.assertRaises(ValueError):
+            drone.set_mission([], start=True)
+        # Rejecting the mission must not have side effects on drone state.
+        self.assertEqual(drone.state, DroneState.IDLE)
+        self.assertEqual(drone.waypoints, [])
+
     def test_abort_forces_return_home_regardless_of_progress(self):
         drone = Drone(config=make_config())
         drone.set_mission([(1, 0, 10), (500, 500, 10)], start=True)
