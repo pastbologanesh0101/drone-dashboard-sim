@@ -88,6 +88,15 @@ class TestMissionEndpoint(unittest.TestCase):
         resp = self.client.post("/mission", json={"waypoints": [{"x": "not-a-number", "y": 0}]})
         self.assertEqual(resp.status_code, 400)
 
+    def test_post_mission_rejects_non_finite_coordinates(self):
+        # float("nan") and float("inf") both succeed, so this can't be
+        # caught by the numeric-conversion check above -- it needs its own
+        # explicit rejection (see drone/app.py's math.isfinite check).
+        resp = self.client.post("/mission", json={"waypoints": [{"x": "nan", "y": 0}]})
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn("finite", resp.get_json()["error"])
+        self.assertEqual(self.drone.state, DroneState.IDLE)
+
 
 class TestAbortEndpoint(unittest.TestCase):
     def setUp(self):

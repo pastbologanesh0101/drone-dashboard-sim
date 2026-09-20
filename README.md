@@ -97,7 +97,8 @@ return regardless of progress.
 - `POST /mission` — body `{"waypoints": [{"x": 20, "y": 0}, {"x": 20, "y": 20}]}`
   (`z` optional per waypoint, defaults to cruise altitude). Replaces the
   waypoint list and starts the mission. Returns `400` if `waypoints` is
-  missing, empty, or has non-numeric coordinates.
+  missing, empty, has non-numeric coordinates, or has non-finite (`NaN`/
+  `Infinity`) coordinates.
 - `POST /abort` — no body required. Forces an immediate transition to
   `returning_home`.
 

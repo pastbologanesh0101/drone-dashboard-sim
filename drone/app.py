@@ -8,6 +8,7 @@ simulation.py and the project README for details.
 
 from __future__ import annotations
 
+import math
 import os
 
 from flask import Flask, jsonify, render_template, request
@@ -54,6 +55,17 @@ def create_app(drone: Drone | None = None) -> Flask:
         except (KeyError, TypeError, ValueError):
             return (
                 jsonify({"error": "each waypoint needs numeric 'x' and 'y' (optional 'z')"}),
+                400,
+            )
+
+        # float("nan")/float("inf") succeed above (they're valid floats) but
+        # would silently break the simulation's distance math -- a waypoint
+        # at NaN/Infinity is never "within tolerance" of anything, so the
+        # drone would fly toward it forever. Reject those explicitly with a
+        # clearer error than a downstream math exception would give.
+        if not all(math.isfinite(coord) for wp in parsed for coord in wp):
+            return (
+                jsonify({"error": "waypoint coordinates must be finite numbers (got NaN/Infinity)"}),
                 400,
             )
 
