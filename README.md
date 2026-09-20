@@ -84,7 +84,12 @@ pip install -r requirements.txt
 python run.py
 ```
 
-Then open <http://127.0.0.1:5000> in a browser. The dashboard polls
+Then open <http://127.0.0.1:5000> in a browser. Pass `--battery 15` to
+start the simulation already low on battery (handy for exercising the
+low-battery return-home behavior without waiting), or `--port 8080` to
+serve on a different port; run `python run.py --help` for details.
+
+The dashboard polls
 `GET /telemetry` once a second and redraws the position plot. Enter
 waypoints in the text box as `x,y` (or `x,y,z`) pairs, one per line, and
 click "Set mission & start". "Abort / return home" forces an immediate
