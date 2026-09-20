@@ -152,6 +152,45 @@ tests/test_simulation.py, tests/test_app.py
 .github/workflows/tests.yml
 ```
 
+## Troubleshooting / FAQ
+
+**Why does the battery percentage drop faster once the drone takes off?**
+`Drone._drain_battery()` applies `idle_drain_rate` (default `0.05` %/s) at
+all times, plus `moving_drain_rate` (default `0.6` %/s) on top of that
+whenever the drone is in a "flying" state (`TAKING_OFF`, `EN_ROUTE`,
+`HOVERING`, `RETURNING_HOME`). So a drone just sitting `IDLE` on the pad
+drains at 0.05 %/s (~33 minutes to empty), while an airborne one drains at
+0.65 %/s (~2.5 minutes to empty) — both tunable via `SimConfig`.
+
+**What actually happens at 0% battery?**
+Two different things, and it's a common point of confusion. First, while
+airborne, crossing `low_battery_threshold` (default 20%) forces an
+automatic `LOW_BATTERY_ABORT` → `RETURNING_HOME` transition (see the state
+machine above) — that's the "safety" behavior, and it happens at 20%, not
+0%. Second, `_drain_battery()` clamps the raw percentage with
+`max(0.0, ...)`, so the number itself never goes negative — but nothing in
+`step()` re-checks battery once `RETURNING_HOME` (it's not in
+`_ABORTABLE_STATES`), so a drone that somehow reaches literal 0% mid-return
+just keeps returning at normal speed. There's no "falls out of the sky"
+model here; battery is a depleting counter and a trigger for one
+state transition, not a real energy budget that caps movement.
+
+**Why is there no real GPS (or any real hardware)?**
+Because this project is a dashboard/backend exercise, not a flight
+controller. `Drone._update_gps()` derives `lat`/`lon` purely from the
+simulated local `x`/`y` position plus bounded random jitter
+(`SimConfig.gps_noise_m`, default ±1.5m) — there's no receiver, no NMEA
+parsing, no satellites. If you came here looking for MAVLink/PX4/ArduPilot
+integration, see the disclaimer below; this repo is deliberately just the
+software layers around a synthetic telemetry feed.
+
+**Why did my `POST /mission` get rejected with a 400?**
+`waypoints` must be a non-empty list, each entry needs numeric `x` and `y`
+(and optional numeric `z`), and coordinates must be finite — `NaN`/
+`Infinity` are rejected too (a waypoint the drone can never measure itself
+as "within tolerance" of would otherwise fly forever). See the HTTP API
+section above for the exact error messages.
+
 ## Disclaimer
 
 Again, to be explicit: this is a simulated telemetry feed and a simulated
